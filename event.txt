@@ -1,0 +1,48 @@
+"""
+mysql event 事件   定时任务
+#格式
+CREATE EVENT [IF NOT EXISTS]
+event_nameON SCHEDULE schedule
+[ON COMPLETION [NOT] PRESERVE]
+[ENABLE | DISABLE]
+[COMMENT 'comment']
+DO sql_statement
+
+"""
+
+#随机插入mytable
+delimiter ;;
+CREATE DEFINER = `root`@`%` EVENT `insertmytable` #事件名insertmytable
+ON SCHEDULE
+EVERY '3' MINUTE STARTS '2018-11-01 00:00:01'  #每隔三分钟一次  从xxx时候开始
+DO BEGIN
+DECLARE chars_str varchar(100) DEFAULT 'abcdefghijklmnopqrstuvwxyzQWERTYUIOPLKJHGFDSAZXCVBNM';
+DECLARE return_str varchar(255) DEFAULT '';
+DECLARE i INT DEFAULT 0;
+WHILE i < 6 DO
+SET return_str = concat(return_str,substring(chars_str , FLOOR(1 + RAND()*52 ),1));
+SET i = i +1;
+END WHILE;
+insert into `mytable`(`name`,`passwd`,`destext`) value(return_str,return_str,return_str);
+END
+;;
+delimiter ;
+
+#查看有没有开启事件
+show variables like 'event_scheduler'
+#如果是on 就是开启了  是off的话
+#1.用set global event_scheduler = on  或者1  开启   重启会失效
+#2.修改数据库配置文件mysql.ini  添加  event_scheduler = on 或者 1  然后重启数据库
+
+#event基本操作
+1.查看都有那些event
+SHOW EVENTS FROM DBname
+2.alter 操作
+#修改运行状态
+alter event `insertmytable` disable [enable]  关闭/打开
+#修改更新时间  修改成每2分钟一次
+alter event `insertmytable` on schedule every 2 minute
+#修改主体
+alter event `insertmytable` do insert into `mytable`(`name`,`passwd`,`destext`) value('testUpdateBody','testUpdateBody','testUpdateBody');
+#重命名event
+alter event `insertmytable` rename to `insert_mytable`

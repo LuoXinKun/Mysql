@@ -14,6 +14,7 @@ create table `mytable`(
 `passwd` varchar(16),
 `destext` text
 )ENGINE = MyISAM AUTO_INCREMENT = 1;
+#修改表名   alter table `mytable` rename as `test_mytable`
 
 2.额外修改索引
 alter table `mytable` add primary key(`id`)
