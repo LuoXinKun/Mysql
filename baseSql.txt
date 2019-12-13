@@ -30,10 +30,23 @@ update `mytable` set passwd = 'xiao' where id = 2
 select `name` from `mytable` where id = 1
 
 #like模糊查找
-select `id` from `mytable` where name regexp 'luo'
+select `id` from `mytable` where name like '%luo%'
 
 #正则匹配
-select `id` from `mytable` where name like '%luo%'
+select `id` from `mytable` where name regexp '.*luo.*'
+select `id` from `mytable` where name rlike  '.*luo.*'
+"""
+#mysql 正则匹配关键字
+^a 以a开始 select 'abcd' regexp '^a.*' 结果1   select 'babc' regexp '^a.*' 结果0
+d$  以d结尾  效果同上
+.  匹配\n 以外的字符
+[abc]  集合匹配  select 'babc' regexp '[opa]' 结果1  select 'babc' regexp '[qpa]' 结果0
+[^abc] ^非  集合匹配不是abc 的
+|  或者  a|bcd  匹配a  或者 bcd    如果是(a|b)cd  则是匹配 acd  或者bcd
+*  a*   表示a 出现0次或者多次  {0,}
++  a+   表示a 出现1次以上    {1,}
+{n}  出现n次    如果是{n,m}   表示出现次数是n<=x<=m  其中n<m
+"""
 
 #union 不同表中的数据查询出来展示 [all] 显示重复   ！注意两边的列数要一样
 select `name` from `mytable` union [all] select `name` from `mytable2`
@@ -67,3 +80,4 @@ alter table `mytable` engine = innodb
 #索引  显示信息  show index from `mytable`;\G
 alter table `mytable` add index(`XXX`) #创建
 drop index xxx on mytable  #删除
+
