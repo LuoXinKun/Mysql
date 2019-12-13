@@ -1,0 +1,68 @@
+"""
+mysql 基本操作
+"""
+
+#创建数据库
+CREATE DATABASE 数据库名
+#删除数据库
+DROP DATABASE 数据库名
+
+1.建表
+create table `mytable`(
+`id` int(8) primary key auto_increment,#id 主键
+`name` varchar(16),
+`passwd` varchar(16),
+`destext` text
+)ENGINE = MyISAM AUTO_INCREMENT = 1;
+
+2.额外修改索引
+alter table `mytable` add primary key(`id`)
+alter table `mytable` add unique(`name`)
+alter table `mytable` add index(`XXX`)
+alter table `mytable` add index(`xxx`,`xxx`) #复合索引
+alter table `mytable` add index(destext(50))  #文本索引
+
+3.增删改查
+insert into `mytable`(`name`,`passwd`,`destext`) value('luoxinkun','luoxinkun','text1')
+delete from `mytable` where id = 3
+update `mytable` set passwd = 'xiao' where id = 2
+select `name` from `mytable` where id = 1
+
+#like模糊查找
+select `id` from `mytable` where name regexp 'luo'
+
+#正则匹配
+select `id` from `mytable` where name like '%luo%'
+
+#union 不同表中的数据查询出来展示 [all] 显示重复   ！注意两边的列数要一样
+select `name` from `mytable` union [all] select `name` from `mytable2`
+
+#order by 排序  默认asc 上升   desc下降
+select `id`,`name` from `mytable` order by id desc #降序
+
+#group by 分组
+alter table `mytable` add `country` varchar(20) not null  #先添加字段  然后加一些数据 就可以进行后面的分组
+select count(`id`),`country` from `mytable` where 1 group by country  #还可以进行 sum avg 等操作
+
+#join 连接操作   分内连(inner)  左连(left) 右连(right)
+select * from `mytable` as a inner join `mytable2` as b on a.`name` = b.`name`  #两边有
+select * from `mytable` as a left join `mytable2` as b on a.`name` = b.`name`   #左边有
+select * from `mytable` as a right join `mytable2` as b on a.`name` = b.`name`  #右边这主  左边没有关联 就为空  有就填数据进去
+
+#Null 查询    is [not] Null
+select id from `nytable` where `destext` is Null
+
+#alter 关键字
+#添加字段
+alter table `mytable` add status int(8) [FIRST] 第一位 [AFTER C] C之后
+#修改字段  modify 或者 change
+alter table `mytable` modify status varchar(20)
+alter table `mytable` change status stat int(8) #注意顺序  把status  修改成stat  类型是int(8)
+alter table `mytable` modify stat bigint not null default 100  #之后的数据默认100
+alter table `mytable` alter stat set default 1000
+alter table `mytable` alter stat drop default
+alter table `mytable` engine = innodb
+
+#索引  显示信息  show index from `mytable`;\G
+alter table `mytable` add index(`XXX`) #创建
+drop index xxx on mytable  #删除
